@@ -3,7 +3,7 @@ class RecommendationEngine
     @preferences = preferences
   end
 
-  def calculate_similarity(critic_1, critic_2)
+  def calculate_euclidean_similarity(critic_1, critic_2)
     @critic_1, @critic_2 = critic_1, critic_2
 
     if common_items.empty?
@@ -11,6 +11,47 @@ class RecommendationEngine
     else
       1.0 / (1.0 + Math.sqrt(find_rating_distance))
     end
+  end
+
+  def calculate_pearson_similarity(critic_1, critic_2)
+    @critic_1, @critic_2 = critic_1, critic_2
+
+    n = common_items.length
+
+    sum1 = rating_for_critic(critic_1) { |rating| rating }
+    sum2 = rating_for_critic(critic_2) { |rating| rating }
+
+    sum1Sq = rating_for_critic(critic_1) { |rating| rating ** 2 }
+    sum2Sq = rating_for_critic(critic_2) { |rating| rating ** 2 }
+
+    num = sum_of_products - (sum1 * sum2 / n)
+
+    critic_1_adjusted = (sum1Sq - ((sum1 ** 2) / n))
+    critic_2_adjusted = (sum2Sq - ((sum2 ** 2) / n))
+
+    den = Math.sqrt(critic_1_adjusted * critic_2_adjusted)
+
+    if den == 0
+      0.0
+    else
+      num / den
+    end
+  end
+
+  private
+
+  def rating_for_critic(critic, sum = 0.0)
+    common_items.map do |item|
+      sum += yield preferences[critic][item]
+    end
+
+    sum
+  end
+
+  def sum_of_products
+    common_items.map do |item|
+      preferences[critic_1][item] * preferences[critic_2][item]
+    end.reduce(:+)
   end
 
   def common_items
