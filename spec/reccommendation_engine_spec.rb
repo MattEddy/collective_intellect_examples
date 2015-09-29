@@ -28,6 +28,16 @@ describe RecommendationEngine do
       ]
     end
   end
+
+  describe "#get_recommendations" do
+    it "recommends movies for a given critic" do
+      expect(described_class.new(data_set).get_recommendations('Toby')).to eq [
+        [3.3477895267131017, 'The Night Listener'],
+        [2.8325499182641614, 'Lady in the Water'],
+        [2.530980703765565, 'Just My Luck']
+      ]
+    end
+  end
 end
 
 

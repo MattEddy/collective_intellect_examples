@@ -19,6 +19,43 @@ class RecommendationEngine
     end.sort.reverse.first(3)
   end
 
+  def get_recommendations(person)
+    adjusted_scores = {}
+
+    (preferences.keys - [person]).each do |critic|
+      adjusted_scores[critic] = {}
+
+      preferences[critic].each do |key, value|
+        if calculate_pearson_similarity(person, critic) >= 0
+          adjusted_scores[critic][key] = calculate_pearson_similarity(person, critic) * value
+        end
+      end
+    end
+
+    summed_ratings = {}
+    similarity_sum = {}
+
+    (preferences.keys - [person]).map do |critic|
+      preferences[critic].keys.each do |movie|
+        unless preferences[person][movie]
+          if adjusted_scores[critic][movie]
+            if summed_ratings[movie]
+              similarity_sum[movie] += calculate_pearson_similarity(person, critic)
+              summed_ratings[movie] += adjusted_scores[critic][movie]
+            else
+              similarity_sum[movie] = calculate_pearson_similarity(person, critic)
+              summed_ratings[movie] = adjusted_scores[critic][movie]
+            end
+          end
+        end
+      end
+    end
+
+    summed_ratings.map do |key, value|
+      [value / similarity_sum[key], key]
+    end.sort.reverse
+  end
+
   def calculate_pearson_similarity(critic_1, critic_2)
     @critic_1, @critic_2 = critic_1, critic_2
 
@@ -71,7 +108,6 @@ class RecommendationEngine
   end
 
   def difference_for_item(item)
-    puts "#{item} #{critic_1} #{preferences[critic_1][item]} | #{item} #{critic_2} #{preferences[critic_2][item]}"
     (preferences[critic_1][item] - preferences[critic_2][item])
   end
 
