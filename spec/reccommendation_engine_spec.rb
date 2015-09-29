@@ -18,6 +18,16 @@ describe RecommendationEngine do
         .to eq 0.39605901719066977
     end
   end
+
+  describe "#top_matches" do
+    it "calculates top similar critics for a given critic" do
+      expect(described_class.new(data_set).top_matches('Toby', 3)).to eq [
+        [0.99124070716192991, 'Lisa Rose'],
+        [0.92447345164190486, 'Mick LaSalle'],
+        [0.89340514744156474, 'Claudia Puig']
+      ]
+    end
+  end
 end
 
 

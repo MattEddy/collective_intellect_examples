@@ -13,6 +13,12 @@ class RecommendationEngine
     end
   end
 
+  def top_matches(person, n = 5)
+    (preferences.keys - [person]).map do |critic|
+      [calculate_pearson_similarity(person, critic), critic]
+    end.sort.reverse.first(3)
+  end
+
   def calculate_pearson_similarity(critic_1, critic_2)
     @critic_1, @critic_2 = critic_1, critic_2
 
