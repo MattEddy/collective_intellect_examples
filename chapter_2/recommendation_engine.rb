@@ -56,6 +56,22 @@ class RecommendationEngine
     end.sort.reverse
   end
 
+  def transform_preferences
+    transformed_preferences = {}
+
+    preferences.each do |critic, ratings|
+      ratings.each do |movie, score|
+        if transformed_preferences[movie]
+          transformed_preferences[movie][critic] = score
+        else
+          transformed_preferences[movie] = { critic => score }
+        end
+      end
+    end
+
+    transformed_preferences
+  end
+
   def calculate_pearson_similarity(critic_1, critic_2)
     @critic_1, @critic_2 = critic_1, critic_2
 

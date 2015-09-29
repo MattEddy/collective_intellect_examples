@@ -38,6 +38,18 @@ describe RecommendationEngine do
       ]
     end
   end
+
+  describe "#transform_preferences" do
+    it "switches preferences from a list of critics to a list of movies" do
+      expect(described_class.new(data_set).transform_preferences['Lady in the Water']).to eq ({
+        "Lisa Rose"        => 2.5,
+        "Gene Seymour"     => 3.0,
+        "Michael Phillips" => 2.5,
+        "Mick LaSalle"     => 3.0,
+        "Jack Matthews"    => 3.0
+      })
+    end
+  end
 end
 
 
