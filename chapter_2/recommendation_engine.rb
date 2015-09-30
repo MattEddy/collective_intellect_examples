@@ -13,9 +13,20 @@ class RecommendationEngine
     end
   end
 
-  def top_matches(person, n = 5)
+  def calculalte_similar_items(n = 10)
+    result = {}
+    transform_preferences
+
+    preferences.each do |item, value|
+      result[item] = top_matches(item, 10, lambda(&method(:calculate_euclidean_similarity)))
+    end
+
+    result
+  end
+
+  def top_matches(person, n = 5, similarity_method = lambda(&method(:calculate_pearson_similarity)))
     (preferences.keys - [person]).map do |critic|
-      [calculate_pearson_similarity(person, critic), critic]
+      [similarity_method.call(person, critic), critic]
     end.sort.reverse.first(3)
   end
 
@@ -69,7 +80,7 @@ class RecommendationEngine
       end
     end
 
-    transformed_preferences
+    @preferences = transformed_preferences
   end
 
   def calculate_pearson_similarity(critic_1, critic_2)

@@ -50,6 +50,15 @@ describe RecommendationEngine do
       })
     end
   end
+
+  describe "#calculalte_similar_items" do
+    it "returns a dictionary of similar items" do
+      expect(described_class.new(data_set).calculalte_similar_items['Lady in the Water']).to eq [[0.4494897427831781, "You, Me and Dupree"],
+        [0.38742588672279304, "The Night Listener"],
+        [0.3483314773547883, "Snakes on a Plane"]
+      ]
+    end
+  end
 end
 
 
